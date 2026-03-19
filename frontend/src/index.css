@@ -1,0 +1,35 @@
+/* === Variables CSS === */
+:root {
+  --radius-sm: 7px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 999px;
+  --transition-fast: 0.12s ease;
+  --transition-normal: 0.18s ease;
+  --transition-slow: 0.25s ease;
+  --color-bg-main: #ffffff;
+  --color-main: #4c7643;
+}
+
+/* === Base === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-dark);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Exemple CSS global ou Tailwind custom */
+.hero {
+  background-image: linear-gradient(#f0f0f0, #f0f0f0), url('/images/vetement_recycle_head.webp');
+  background-size: cover;
+  background-position: center;
+}
