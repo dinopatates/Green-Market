@@ -6,6 +6,7 @@ import Loader from "./components/Loader";
 import ProtectedRoute from "./Providers/ProtectedRoute";
 import { AuthProvider } from "./Providers/AuthProvider";
 import { HelmetProvider } from "react-helmet-async";
+import RegisterPage from "./pages/RegisterPage";
 
 // Lazy load des pages pour améliorer les performances
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -40,6 +41,7 @@ export default function App() {
                     <ProductDetailsPage />
                 }
               />
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </Suspense>
 

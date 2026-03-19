@@ -13,7 +13,13 @@ export default function Nav() {
             <h1 className="text-3xl font-bold text-[vut(--color-main)]">Green Market</h1>
           </Link>
 
+
+
           <div className="nav-links">
+            <Link to="/products" className="text-lg py-2 px-4 text-white bg-[var(--color-main)] flex justify-center  items-center rounded-md mr-4 hover:opacity-90 transition-[var(--transition-normal)]">
+              Catalogue
+            </Link>
+
             <Link to="/products" className="text-lg py-2 px-4 text-white bg-[var(--color-main)] flex justify-center  items-center rounded-md mr-4 hover:opacity-90 transition-[var(--transition-normal)]">
               Catalogue
             </Link>

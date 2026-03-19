@@ -1,45 +1,54 @@
 import axios from 'axios';
 
-// On définit l'URL de base de ton API (souvent configurée dans un .env)
-const API_URL = 'http://localhost:8000/api/auth'; 
+/**
+ * Configuration de l'instance API
+ * Centralise l'URL de base et les headers par défaut
+ */
+const api = axios.create({
+    baseURL: 'http://localhost:5000/api/auth',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
 /**
- * Inscription d'un nouvel utilisateur
- * @param {Object} userData - { name, email, password }
+ * Inscription d'un utilisateur
+ * @param {Object} userData - Données du formulaire (name, email, password)
+ * @returns {Promise<Object>} Réponse de l'API (ID utilisateur, message)
  */
 export const register = async (userData) => {
     try {
-        const response = await axios.post(`${API_URL}/register`, userData);
-        return response.data; 
+        const { data } = await api.post('/register', userData);
+        return data;
     } catch (error) {
-        // On propage l'erreur pour que le composant React puisse l'afficher
-        throw error.response?.data || "Erreur lors de l'inscription";
+        throw error.response?.data || { message: "Erreur lors de l'inscription" };
     }
 };
 
 /**
- * Connexion de l'utilisateur
- * @param {Object} credentials - { email, password }
+ * Authentification de l'utilisateur
+ * @param {Object} credentials - Identifiants (email, password)
+ * @returns {Promise<Object>} Contient le Token JWT et les informations utilisateur
  */
 export const login = async (credentials) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, credentials);
-        
-        return response.data; 
+        const { data } = await api.post('/login', credentials);
+        return data;
     } catch (error) {
-        throw error.response?.data || "Email ou mot de passe incorrect";
+        throw error.response?.data || { message: "Identifiants incorrects" };
     }
 };
 
 /**
- * Optionnel : Déconnexion (si ton backend nécessite d'invalider un token)
+ * Déconnexion
+ * @param {string} token - Token JWT pour authentifier la requête
  */
 export const logout = async (token) => {
     try {
-        await axios.post(`${API_URL}/logout`, {}, {
+        await api.post('/logout', {}, {
             headers: { Authorization: `Bearer ${token}` }
         });
     } catch (error) {
-        console.error("Erreur déconnexion", error);
+        console.error("Échec de la déconnexion :", error.message);
     }
 };
