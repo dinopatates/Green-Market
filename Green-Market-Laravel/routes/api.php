@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Endpoint : POST http://localhost:8000/api/register
+Route::post('/register', [AuthController::class, 'register']);
+
+// Endpoint : POST http://localhost:8000/api/login
+Route::post('/login', [AuthController::class, 'login']);
