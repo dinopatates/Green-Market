@@ -1,0 +1,15 @@
+pm.test("Le statut de réponse est 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("La réponse est au format JSON", function () {
+    pm.response.to.be.withBody;
+    pm.response.to.be.json;
+});
+
+
+pm.test("On reçoit bien une liste de produits", function () {
+    const jsonData = pm.response.json();
+    pm.expect(jsonData.success).to.eql(true);
+    pm.expect(jsonData.data).to.be.an('array');  
+});

@@ -8,15 +8,19 @@ export default function Product() {
   const productsPerPage = 6;
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
+    // On appelle TON API Laravel (vérifie bien l'URL, souvent http://localhost:8000/api/products)
+    fetch("http://localhost:8000/api/products")
       .then((res) => res.json())
-      .then((data) => {
-        const clothingProducts = data
-          .filter((product) => product.category.includes("clothing"));
-        setProducts(clothingProducts);
+      .then((response) => {
+        // Dans mon controller précédent, j'ai renvoyé { success: true, data: [...] }
+        // On récupère donc response.data
+        setProducts(response.data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Erreur API:", err);
+        setLoading(false);
+      });
   }, []);
 
   // pagination
@@ -25,16 +29,18 @@ export default function Product() {
   const endIdx = startIdx + productsPerPage;
   const paginatedProducts = products.slice(startIdx, endIdx);
 
+  // Image par défaut puisque ta table "products" n'a pas de champ image pour l'instant
+  const defaultImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80";
+
   return (
     <Suspense fallback={<div>Chargement...</div>}>
-      {/* Produits */}
       <section className="px-4 w-full flex flex-col justify-center items-center">
         <div className="w-full flex justify-start items-center">
-          <h3 className="py-8 text-xl font-bold">Nos produits</h3>
+          <h3 className="py-8 text-xl font-bold">Nos vêtements écolos</h3>
         </div>
 
         {loading ? (
-          <p>Chargement...</p>
+          <p>Chargement des pépites...</p>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full pb-4">
@@ -51,53 +57,55 @@ export default function Product() {
                       backgroundSize: "repeat",
                     }}
                   >
-                    {/* Image */}
-                    <div className="w-full h-3/4 bg-white rounded-t-lg flex justify-center items-center">
+                    {/* Image : On utilise defaultImage car product.image n'existe pas en DB */}
+                    <div className="w-full h-3/4 bg-white rounded-t-lg flex justify-center items-center overflow-hidden">
                       <img
-                        src={product.image}
-                        alt={product.title}
-                        className="h-full object-contain p-2"
+                        src={defaultImage} 
+                        alt={product.name}
+                        className="h-full w-full object-cover p-0"
                       />
                     </div>
 
-                    {/* Infos */}
+                    {/* Infos : Attention, on utilise product.name (ton schéma) et non title */}
                     <div className="px-2 font-bold mt-1">
                       <h4 className="text-md">
-                        {product.title.length > 25
-                          ? product.title.slice(0, 25) + "…"
-                          : product.title}
+                        {product.name.length > 25
+                          ? product.name.slice(0, 25) + "…"
+                          : product.name}
                       </h4>
-                      <p className="text-md">{product.price} €</p>
+                      <p className="text-md text-green-700">{product.price} €</p>
+                      {/* Petit bonus : On peut afficher le producteur si tu veux */}
+                      <p className="text-xs text-gray-500 font-normal">Vendu par : {product.user?.name}</p>
                     </div>
 
                     {/* Bouton */}
                     <div className="w-full px-2 font-md text-md bg-[var(--color-main)] hover:bg-green-800 text-white text-center mt-auto py-2 rounded-b-lg hover:opacity-90 transition">
-                      Voir le produit
+                      Voir la pièce
                     </div>
                   </article>
                 </Link>
               ))}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination reste identique */}
             <div className="flex justify-center gap-4 my-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-[var(--color-main)] text-white  rounded disabled:opacity-50"
+                className="px-4 py-2 bg-[var(--color-main)] text-white rounded disabled:opacity-50"
               >
                 Précédent
               </button>
 
               <span className="flex items-center px-2">
-                {currentPage} / {totalPages}
+                {currentPage} / {totalPages || 1}
               </span>
 
               <button
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
                 className="px-4 py-2 bg-[var(--color-main)] text-white rounded disabled:opacity-50"
               >
                 Suivant
