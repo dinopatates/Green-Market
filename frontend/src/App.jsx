@@ -12,6 +12,7 @@ import RegisterPage from "./pages/RegisterPage";
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const ProductListPage = React.lazy(() => import("./pages/ProductListPage"));
 const ProductDetailsPage = React.lazy(() => import("./pages/ProductDetailsPage"));
+const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
                 }
               />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
             </Routes>
           </Suspense>
 

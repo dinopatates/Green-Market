@@ -22,21 +22,22 @@ const ProductCard = memo(({ product }) => {
       <Link
         to={`/product/${product.id}`}
         className="flex flex-col h-full"
-        aria-label={`Voir les détails du produit ${product.title}`}
+        aria-label={`Voir les détails du produit ${product.name}`}
       >
         {/* Image produit */}
         <div className="w-full h-3/4 bg-white rounded-t-lg flex justify-center items-center" aria-hidden="true">
           <img
-            src={product.image}
+            src={product.image || "/images/placeholder-product.png"}
             alt=""
             loading="lazy"
             className="h-full object-contain p-2 pointer-events-none"
+            onError={(e) => e.target.src = "/images/placeholder-product.png"}
           />
         </div>
 
         {/* Infos produit */}
         <div className="px-2 font-bold mt-1">
-          <h4 className="text-md">{product.title.length > 25 ? product.title.slice(0, 25) + "…" : product.title}</h4>
+          <h4 className="text-md">{product.name.length > 25 ? product.name.slice(0, 25) + "…" : product.name}</h4>
           <p className="text-md">{product.price} €</p>
         </div>
 
@@ -56,16 +57,19 @@ export default function HomePage() {
   const heroImg = "/images/vetement_recycle_head.webp";
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
+    const api_url = import.meta.env.VITE_API_URL;
+    fetch(`${api_url}/api/products`)
       .then((res) => res.json())
-      .then((data) => {
-        const clothingProducts = data.filter((p) =>
-          p.category.includes("clothing")
-        );
-        setProducts(clothingProducts);
+      .then((response) => {
+        if (response.success && response.data) {
+          setProducts(response.data);
+        }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((error) => {
+        console.error("Erreur lors du chargement des produits:", error);
+        setLoading(false);
+      });
 
     const img = new Image();
     img.src = heroImg;

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useContext } from "react";
 import Loader from "../components/Loader";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 const api_url = import.meta.env.VITE_API_URL;
 
 export function AuthProvider({ children }) {
