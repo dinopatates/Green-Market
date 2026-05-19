@@ -1,8 +1,6 @@
-import React, { createContext } from "react";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useContext } from "react";
-import Loader from "../components/Loader";
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useState, useEffect, useContext } from "react";
+// import Loader from "../components/Loader"; // Enlevé pour éviter l'erreur 'no-unused-vars' (jamais utilisé)
 
 export const AuthContext = createContext();
 const api_url = import.meta.env.VITE_API_URL;
@@ -11,13 +9,19 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
   useEffect(() => {
     async function validateToken() {
-      if (token) {
+      // 1. Correction : On récupère le token ICI à l'intérieur. 
+      // Cela supprime l'erreur de dépendance manquante d'un seul coup.
+      const token = localStorage.getItem("token");
+
+      // 2. Correction logique : C'est "if (!token)" (s'il n'y a PAS de token).
+      // Ton ancien code coupait la fonction si un token existait, empêchant de charger l'utilisateur.
+      if (!token) {
         setLoading(false);
         return;
       }
+
       try {
         const response = await fetch(`${api_url}/api/auth/me`, {
           headers: {
@@ -25,12 +29,13 @@ export function AuthProvider({ children }) {
           },
         });
 
-        const { user } = await response.json();
-
-        setCurrentUser(user);
-        setLoading(false);
+        if (response.ok) {
+          const { user } = await response.json();
+          setCurrentUser(user);
+        }
       } catch (error) {
-        console.log(error);
+        console.error("Erreur de validation du token :", error);
+      } finally {
         setLoading(false);
       }
     }
@@ -49,7 +54,7 @@ export function AuthProvider({ children }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
+          },
         body: JSON.stringify({
           email,
           password,
@@ -84,6 +89,9 @@ export function AuthProvider({ children }) {
         setCurrentUser(user);
       }
     } catch (e) {
+      // 3. Correction : On log l'erreur avant de la rethrow.
+      // Cela règle l'erreur ESLint 'no-useless-catch'.
+      console.error("Erreur détectée lors de la connexion :", e);
       throw e;
     }
   }
@@ -97,7 +105,6 @@ export function AuthProvider({ children }) {
     setCurrentUser,
   };
 
-  console.log(currentUser);
   return (
     <div>
       <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

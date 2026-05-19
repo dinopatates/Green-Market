@@ -1,20 +1,24 @@
-
-import { createContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useState } from 'react';
 import * as authService from '../services/authService';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); // Notre "Session"
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
+    // 1. Correction : Initialisation "lazy" directement depuis le localStorage.
+    // Cela évite le useEffect, le double rendu et l'erreur de modification synchrone d'état.
+    const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem('user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+        try {
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch {
+            return null; // Sécurité si le JSON dans le localStorage est corrompu
         }
-        setLoading(false);
-    }, []);
+    });
+
+    // Puisque le chargement du localStorage est instantané au démarrage,
+    // le chargement est déjà terminé (false).
+    const [loading] = useState(false);
 
     const login = async (credentials) => {
         const data = await authService.login(credentials);

@@ -28,8 +28,6 @@ export default function Product() {
   const endIdx = startIdx + productsPerPage;
   const paginatedProducts = products.slice(startIdx, endIdx);
 
-  const defaultImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80";
-
   return (
     <Suspense fallback={<div>Chargement...</div>}>
       <section className="px-4 w-full flex flex-col justify-center items-center">
