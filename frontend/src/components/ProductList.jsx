@@ -6,15 +6,15 @@ export default function Product() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
+  const api_url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // On appelle TON API Laravel (vérifie bien l'URL, souvent http://localhost:8000/api/products)
-    fetch("http://localhost:8000/api/products")
+    fetch(`${api_url}/api/products`)
       .then((res) => res.json())
       .then((response) => {
-        // Dans mon controller précédent, j'ai renvoyé { success: true, data: [...] }
-        // On récupère donc response.data
-        setProducts(response.data);
+        if (response.success && response.data) {
+          setProducts(response.data);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -23,13 +23,11 @@ export default function Product() {
       });
   }, []);
 
-  // pagination
   const totalPages = Math.ceil(products.length / productsPerPage);
   const startIdx = (currentPage - 1) * productsPerPage;
   const endIdx = startIdx + productsPerPage;
   const paginatedProducts = products.slice(startIdx, endIdx);
 
-  // Image par défaut puisque ta table "products" n'a pas de champ image pour l'instant
   const defaultImage = "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80";
 
   return (
@@ -57,16 +55,16 @@ export default function Product() {
                       backgroundSize: "repeat",
                     }}
                   >
-                    {/* Image : On utilise defaultImage car product.image n'existe pas en DB */}
+                    {/* Image */}
                     <div className="w-full h-3/4 bg-white rounded-t-lg flex justify-center items-center overflow-hidden">
                       <img
-                        src={defaultImage} 
+                        src={product.image} 
                         alt={product.name}
                         className="h-full w-full object-cover p-0"
                       />
                     </div>
 
-                    {/* Infos : Attention, on utilise product.name (ton schéma) et non title */}
+                    {/* Infos */}
                     <div className="px-2 font-bold mt-1">
                       <h4 className="text-md">
                         {product.name.length > 25
@@ -74,7 +72,6 @@ export default function Product() {
                           : product.name}
                       </h4>
                       <p className="text-md text-green-700">{product.price} €</p>
-                      {/* Petit bonus : On peut afficher le producteur si tu veux */}
                       <p className="text-xs text-gray-500 font-normal">Vendu par : {product.user?.name}</p>
                     </div>
 

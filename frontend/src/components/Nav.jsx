@@ -22,6 +22,14 @@ export default function Nav() {
                 <span className="text-lg py-2 px-4 text-white flex items-center rounded-md mr-4">
                   Connecté ({currentUser.name})
                 </span>
+                <Link to="/orders" className="text-lg py-2 px-4 text-white bg-purple-600 flex justify-center items-center rounded-md mr-4 hover:opacity-90 transition-[var(--transition-normal)]">
+                  Mes commandes
+                </Link>
+                {currentUser.role === 'producer' && (
+                  <Link to="/create-product" className="text-lg py-2 px-4 text-white bg-blue-600 flex justify-center items-center rounded-md mr-4 hover:opacity-90 transition-[var(--transition-normal)]">
+                    Créer un produit
+                  </Link>
+                )}
                 <button
                   onClick={logout}
                   className="text-lg py-2 px-4 text-white bg-red-600 flex justify-center items-center rounded-md mr-4 hover:opacity-90 transition-[var(--transition-normal)]"

@@ -2,19 +2,29 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
 Route::group(['prefix' => 'auth'], function () {
-    // Endpoint : POST http://localhost:8000/api/auth/register
     Route::post('/register', [AuthController::class, 'register']);
-
-    // Endpoint : POST http://localhost:8000/api/auth/login
     Route::post('/login', [AuthController::class, 'login']);
-
-    // Endpoint : GET http://localhost:8000/api/auth/me
     Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 });
 
-// Endpoint : POST http://localhost:8000/api/products
+// Users routes
+Route::get('/users', [UsersController::class, 'index']);
+Route::get('/users/{user}', [UsersController::class, 'show']);
+
+// Products routes
 Route::get('/products', [ProductsController::class, 'index']);
+Route::get('/products/{product}', [ProductsController::class, 'show']);
+Route::post('/products', [ProductsController::class, 'store'])->middleware('auth:sanctum');
+
+// Orders routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/orders', [OrdersController::class, 'store']);
+    Route::get('/orders', [OrdersController::class, 'index']);
+    Route::get('/orders/{order}', [OrdersController::class, 'show']);
+});

@@ -13,6 +13,9 @@ const HomePage = React.lazy(() => import("./pages/HomePage"));
 const ProductListPage = React.lazy(() => import("./pages/ProductListPage"));
 const ProductDetailsPage = React.lazy(() => import("./pages/ProductDetailsPage"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+const CreateProductPage = React.lazy(() => import("./pages/CreateProductPage"));
+const OrdersPage = React.lazy(() => import("./pages/OrdersPage"));
+const PrivacyPage = React.lazy(() => import("./pages/PrivacyPage"));
 
 export default function App() {
   return (
@@ -44,6 +47,9 @@ export default function App() {
               />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/create-product" element={<CreateProductPage />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
             </Routes>
           </Suspense>
 

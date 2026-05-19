@@ -154,7 +154,7 @@ export default function HomePage() {
               </p>
               <img
                 className="w-full md:w-1/2 lg:w-2/5 h-64 md:h-full object-cover rounded-lg"
-                src="/images/recycle_plant.webp"
+                src="{{product.image}}"
                 alt=""
                 loading="lazy"
                 aria-hidden="true"

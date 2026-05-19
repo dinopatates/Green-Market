@@ -39,6 +39,14 @@ export default function Footer() {
                 Catalogue
               </Link>
             </li>
+            <li>
+              <Link
+                to="/privacy"
+                className="hover:underline focus:outline-none focus:ring-2 focus:ring-green-600"
+              >
+                Politique de Confidentialité
+              </Link>
+            </li>
           </ul>
         </nav>
         

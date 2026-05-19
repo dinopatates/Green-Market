@@ -1,38 +1,82 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Providers/AuthProvider";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const [product, setProduct] = useState(null);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [ordering, setOrdering] = useState(false);
+  const [error, setError] = useState(null);
+  const api_url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     setLoading(true);
 
-    fetch(`https://fakestoreapi.com/products/${id}`)
+    fetch(`${api_url}/api/products`)
       .then((res) => res.json())
-      .then((productData) => {
-        setProduct(productData);
-
-        return fetch("https://fakestoreapi.com/products")
-          .then((res) => res.json())
-          .then((allProducts) => {
-            const suggestions = allProducts
-              .filter(
-                (p) =>
-                  p.category === productData.category &&
-                  p.id !== productData.id
-              )
-              .slice(0, 6);
-
-            setSuggestedProducts(suggestions);
-            setLoading(false);
-          });
+      .then((response) => {
+        if (response.success && response.data) {
+          const product = response.data.find((p) => p.id === parseInt(id));
+          if (product) {
+            setProduct(product);
+            setSuggestedProducts(response.data.filter((p) => p.id !== product.id).slice(0, 6));
+          }
+        }
+        setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [id]);
+  }, [id, api_url]);
+
+  const handleOrder = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setOrdering(true);
+
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${api_url}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              product_id: product.id,
+              quantity: parseInt(quantity),
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Erreur lors de la commande");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        alert("Commande créée avec succès!");
+        navigate("/");
+      }
+    } catch (err) {
+      setError(err.message || "Une erreur est survenue");
+    } finally {
+      setOrdering(false);
+    }
+  };
 
   if (loading) {
     return <p className="p-4">Chargement...</p>;
@@ -55,8 +99,8 @@ export default function ProductDetailsPage() {
           <div className="w-full md:w-1/2 p-4">
             <div className="bg-white rounded-lg flex justify-center items-center h-80">
               <img
-                src={product.image}
-                alt={product.title}
+                src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80"
+                alt={product.name}
                 className="h-full object-contain p-4"
               />
             </div>
@@ -71,23 +115,49 @@ export default function ProductDetailsPage() {
             }}
           >
             <h2 className="text-xl font-semibold">
-              {product.title}
+              {product.name}
             </h2>
 
             <p className="text-lg font-bold">
-              {product.price} €
+              {product.price} € | Stock: {product.stock}
             </p>
 
-            <div className="flex justify-end">
-              <button className="bg-[var(--color-main)] text-white px-6 py-2 rounded hover:bg-gray-800 transition">
-                Acheter
-              </button>
-            </div>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
+                {error}
+              </div>
+            )}
+
+            {product.stock > 0 ? (
+              <form onSubmit={handleOrder} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold">Quantité</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={product.stock}
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="w-full p-2 rounded border-none focus:ring-2 focus:ring-[var(--color-main)] outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={ordering}
+                  className="bg-[var(--color-main)] text-white px-6 py-2 rounded hover:bg-gray-800 transition disabled:opacity-50"
+                >
+                  {ordering ? "Commande en cours..." : "Commander"}
+                </button>
+              </form>
+            ) : (
+              <p className="text-red-600 font-bold">Rupture de stock</p>
+            )}
 
             <div className="h-px w-full bg-black my-2"></div>
 
             <p className="text-md font-medium text-justify">
-              {product.description}
+              Produit de qualité écologique. Vendu par {product.user?.name || "Green Market"}
             </p>
           </div>
         </article>
@@ -116,17 +186,17 @@ export default function ProductDetailsPage() {
                 >
                   <div className="w-full h-2/3 bg-white rounded-t-lg flex justify-center items-center">
                     <img
-                      src={p.image}
-                      alt={p.title}
+                      src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=500&q=80"
+                      alt={p.name}
                       className="h-full object-contain p-2"
                     />
                   </div>
 
                   <div className="px-2 font-bold mt-1">
                     <h4 className="text-sm">
-                      {p.title.length > 30
-                        ? p.title.slice(0, 30) + "…"
-                        : p.title}
+                      {p.name.length > 30
+                        ? p.name.slice(0, 30) + "…"
+                        : p.name}
                     </h4>
                     <p className="text-sm">{p.price} €</p>
                   </div>
