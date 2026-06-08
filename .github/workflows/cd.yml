@@ -64,18 +64,18 @@ jobs:
       - name: Copier docker-compose vers le VPS
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\r$//' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml root@178.105.12.17:/root/app/
 
       - name: Déployer sur le VPS via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 178.105.12.17
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\r$//' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@178.105.12.17 <<'EOF'
             cd /root/app
             docker compose pull
             docker compose down || true
             docker compose up -d
+          EOF
