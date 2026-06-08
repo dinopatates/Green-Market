@@ -62,13 +62,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Copier docker-compose vers le VPS
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: 178.105.12.17
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
-          target: "/root/app/"
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml root@178.105.12.17:/root/app/
 
       - name: Déployer sur le VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
