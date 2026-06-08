@@ -5,10 +5,15 @@ services:
     image: gustavedoc/green_market-backend:latest
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend:/app
 
   frontend:
     image: gustavedoc/green_market-frontend:latest
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
