@@ -2,7 +2,7 @@ name: image-builder
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   # Construction et déploiement de l'image Docker du backend
@@ -69,8 +69,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /root/app
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin master
+            git reset --hard origin/master
             git clean -fd
             docker compose pull
             docker compose down || true
