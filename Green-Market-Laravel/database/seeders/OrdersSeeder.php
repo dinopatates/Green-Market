@@ -14,8 +14,8 @@ class OrdersSeeder extends Seeder
 
         Order::create([
             'user_id' => $client->id,
-            'total'   => 0, // Sera calculé par OrderLinesSeeder
-            'status'  => 'payée',
+            'total' => 0, // Sera calculé par OrderLinesSeeder
+            'status' => 'payée',
         ]);
     }
 }

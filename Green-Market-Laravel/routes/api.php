@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 

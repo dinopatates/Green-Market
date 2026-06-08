@@ -10,16 +10,16 @@ class CorsMiddleware
     public function handle(Request $request, Closure $next)
     {
         $origin = $request->headers->get('origin');
-        
+
         // Allow localhost with any port for development
         $isLocalhost = $origin && str_starts_with($origin, 'http://localhost:');
-        
+
         if ($isLocalhost || $origin === 'http://localhost') {
             $allowedOrigin = $origin;
         } else {
             $allowedOrigin = 'http://localhost:5174';
         }
-        
+
         // Handle preflight requests
         if ($request->getMethod() === 'OPTIONS') {
             return response('', 200)

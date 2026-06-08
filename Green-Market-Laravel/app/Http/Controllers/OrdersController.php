@@ -32,7 +32,7 @@ class OrdersController extends Controller
                 if ($product->stock < $item['quantity']) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Stock insuffisant pour {$product->name}"
+                        'message' => "Stock insuffisant pour {$product->name}",
                     ], 400);
                 }
 
@@ -70,12 +70,12 @@ class OrdersController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Commande créée avec succès',
-                'data' => $order->load('orderLines')
+                'data' => $order->load('orderLines'),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -93,12 +93,12 @@ class OrdersController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $orders
+                'data' => $orders,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -113,18 +113,18 @@ class OrdersController extends Controller
             if ($order->user_id !== $request->user()->id) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Non autorisé'
+                    'message' => 'Non autorisé',
                 ], 403);
             }
 
             return response()->json([
                 'success' => true,
-                'data' => $order->load('orderLines.product')
+                'data' => $order->load('orderLines.product'),
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

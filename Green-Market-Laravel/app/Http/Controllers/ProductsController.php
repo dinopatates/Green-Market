@@ -14,15 +14,16 @@ class ProductsController extends Controller
     {
         try {
             $products = Product::with('user')->get();
+
             return response()->json([
                 'success' => true,
-                'data'    => $products
+                'data' => $products,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ], 500);
         }
     }
@@ -45,7 +46,7 @@ class ProductsController extends Controller
             if ($user->role !== 'producer') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Seuls les producteurs peuvent créer des produits'
+                    'message' => 'Seuls les producteurs peuvent créer des produits',
                 ], 403);
             }
 
@@ -58,12 +59,12 @@ class ProductsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $product->load('user')
+                'data' => $product->load('user'),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -75,14 +76,15 @@ class ProductsController extends Controller
     {
         try {
             $product = Product::with('user')->findOrFail($id);
+
             return response()->json([
                 'success' => true,
-                'data'    => $product
+                'data' => $product,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Produit non trouvé'
+                'message' => 'Produit non trouvé',
             ], 404);
         }
     }
