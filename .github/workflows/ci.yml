@@ -28,11 +28,11 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
-      - name: Étape : LINT (eslint)
+      - name: Etape LINT (eslint)
         run: npm run lint
         working-directory: ./frontend
 
-      - name: Étape : BUILD FRONT-END
+      - name: Etape BUILD FRONT-END
         run: npm run build
         working-directory: ./frontend
 
@@ -57,11 +57,11 @@ jobs:
         run: composer install --no-progress --prefer-dist
         working-directory: ./Green-Market-Laravel
 
-      - name: Étape : LINT (Laravel Pint)
+      - name: Etape LINT (Laravel Pint)
         run: ./vendor/bin/pint --test
         working-directory: ./Green-Market-Laravel
 
-      - name: Étape : BUILD BACK-END (Configuration d'environnement)
+      - name: Etape BUILD BACK-END (Configuration d'environnement)
         run: |
           if [ ! -f .env ]; then
             cp .env.example .env
@@ -72,7 +72,7 @@ jobs:
           touch database/database.sqlite
         working-directory: ./Green-Market-Laravel
 
-      - name: Étape : TESTS SI DISPONIBLES
+      - name: Etape TESTS SI DISPONIBLES
         run: php artisan test --parallel
         working-directory: ./Green-Market-Laravel
 
@@ -90,5 +90,5 @@ jobs:
       - name: Configuration de Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: 🐳 Étape : VÉRIFICATION DOCKER BUILD
+      - name: Etape VERIFICATION DOCKER BUILD
         run: docker compose build
