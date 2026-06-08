@@ -19,6 +19,8 @@ export default function ProductDetailsPage() {
     let isMounted = true;
 
     const fetchProducts = async () => {
+      await Promise.resolve();
+      if (!isMounted) return;
       setLoading(true);
 
       try {
@@ -34,7 +36,7 @@ export default function ProductDetailsPage() {
             setSuggestedProducts(response.data.filter((p) => p.id !== product.id).slice(0, 6));
           }
         }
-      } catch (error) {
+      } catch {
         // ignore fetch error, loading state will still update below
       } finally {
         if (isMounted) {
