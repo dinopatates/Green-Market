@@ -11,12 +11,9 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function validateToken() {
-      // 1. Correction : On récupère le token ICI à l'intérieur. 
-      // Cela supprime l'erreur de dépendance manquante d'un seul coup.
+
       const token = localStorage.getItem("token");
 
-      // 2. Correction logique : C'est "if (!token)" (s'il n'y a PAS de token).
-      // Ton ancien code coupait la fonction si un token existait, empêchant de charger l'utilisateur.
       if (!token) {
         setLoading(false);
         return;
@@ -89,8 +86,7 @@ export function AuthProvider({ children }) {
         setCurrentUser(user);
       }
     } catch (e) {
-      // 3. Correction : On log l'erreur avant de la rethrow.
-      // Cela règle l'erreur ESLint 'no-useless-catch'.
+
       console.error("Erreur détectée lors de la connexion :", e);
       throw e;
     }

@@ -16,21 +16,38 @@ export default function ProductDetailsPage() {
   const api_url = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    setLoading(true);
+    let isMounted = true;
 
-    fetch(`${api_url}/api/products`)
-      .then((res) => res.json())
-      .then((response) => {
+    const fetchProducts = async () => {
+      setLoading(true);
+
+      try {
+        const res = await fetch(`${api_url}/api/products`);
+        const response = await res.json();
+
+        if (!isMounted) return;
+
         if (response.success && response.data) {
-          const product = response.data.find((p) => p.id === parseInt(id));
+          const product = response.data.find((p) => p.id === parseInt(id, 10));
           if (product) {
             setProduct(product);
             setSuggestedProducts(response.data.filter((p) => p.id !== product.id).slice(0, 6));
           }
         }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      } catch (error) {
+        // ignore fetch error, loading state will still update below
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProducts();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, api_url]);
 
   const handleOrder = async (e) => {
