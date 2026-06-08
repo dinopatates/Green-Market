@@ -64,15 +64,21 @@ jobs:
       - name: Copier docker-compose vers le VPS
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\r$//' > ~/.ssh/id_rsa
+          cat > ~/.ssh/id_rsa <<'EOF'
+${{ secrets.SSH_PRIVATE_KEY }}
+EOF
           chmod 600 ~/.ssh/id_rsa
+          sed -i 's/\r$//' ~/.ssh/id_rsa
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml root@178.105.12.17:/root/app/
 
       - name: Déployer sur le VPS via SSH
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" | sed 's/\r$//' > ~/.ssh/id_rsa
+          cat > ~/.ssh/id_rsa <<'EOF'
+${{ secrets.SSH_PRIVATE_KEY }}
+EOF
           chmod 600 ~/.ssh/id_rsa
+          sed -i 's/\r$//' ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@178.105.12.17 <<'EOF'
             cd /root/app
             docker compose pull
