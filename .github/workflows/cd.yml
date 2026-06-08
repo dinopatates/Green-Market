@@ -61,7 +61,16 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
-      - name: Deploy on VPS via SSH
+      - name: Copier docker-compose vers le VPS
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: 178.105.12.17
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: "/root/app/"
+
+      - name: Déployer sur le VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 178.105.12.17
@@ -69,9 +78,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /root/app
-            git fetch origin master
-            git reset --hard origin/master
-            git clean -fd
             docker compose pull
             docker compose down || true
             docker compose up -d
