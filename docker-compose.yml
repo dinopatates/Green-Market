@@ -2,16 +2,14 @@ version: "3.8"
 
 services:
   backend:
-    build:
-      context: ./Green-Market-Laravel
+    image: gustavedoc/green_market-backend:latest
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
 
   frontend:
-    build:
-      context: ./frontend
+    image: gustavedoc/green_market-frontend:latest
     ports:
       - "3000:3000"
     volumes:
