@@ -69,7 +69,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /root/app
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
             docker compose pull
-            docker compose down
+            docker compose down || true
             docker compose up -d
